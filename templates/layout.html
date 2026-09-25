@@ -1,86 +1,63 @@
 <!DOCTYPE html>
 
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="initial-scale=1, width=device-width" />
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="initial-scale=1, width=device-width" />
 
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
-      crossorigin="anonymous"
-    />
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
-      crossorigin="anonymous"
-    ></script>
+<link
+href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+rel="stylesheet"
+integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+crossorigin="anonymous"
+/>
+<script
+src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+crossorigin="anonymous"
+></script>
 
-    <link href="../static/style.css" rel="stylesheet" />
+<link href="../static/style.css" rel="stylesheet" />
 
-    <title>StrengthSync: {% block title %}{% endblock %}</title>
-  </head>
+<title>StrengthSync: {% block title %}{% endblock %}</title>
+</head>
 
-  <body>
-    <nav class="bg-light border navbar navbar-expand-md navbar-light">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="/">StrengthSync</a>
-        <div class="collapse navbar-collapse" id="navbar">
-          {% if session["user_id"] %}
-          <ul class="navbar-nav me-auto mt-2">
-            <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
-            <li class="nav-item">
-              <a class="nav-link" href="/exerciselist">Exercise List</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/workoutlog">Workout Log</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/foodlist">Food List</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/fooddiary">Food Diary</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/mystats">My Stats</a>
-            </li>
-            <li class="nav-item"><a class="nav-link" href="/tips">Tips</a></li>
-            <li class="nav-item">
-              <a class="nav-link" href="/contact">Contact</a>
-            </li>
-          </ul>
-          <ul class="navbar-nav ms-auto mt-2">
-            <li class="nav-item">
-              <a class="nav-link" href="/logout">Log Out</a>
-            </li>
-          </ul>
-          {% else %}
-          <ul class="navbar-nav ms-auto mt-2">
-            <li class="nav-item">
-              <a class="nav-link" href="/register">Register</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/login">Log In</a>
-            </li>
-          </ul>
-          {% endif %}
-        </div>
-      </div>
-    </nav>
+<body>
+<nav class="site-nav">
+  <div class="site-nav-inner">
+    <a class="site-brand" href="/">StrengthSync</a>
 
-    <header></header>
+    {% if session["user_id"] %}
+    <ul class="site-nav-links">
+      <li><a class="nav-link {% if request.path == '/' %}active{% endif %}" href="/">Home</a></li>
+      <li><a class="nav-link {% if request.path == '/exerciselist' %}active{% endif %}" href="/exerciselist">Exercise List</a></li>
+      <li><a class="nav-link {% if request.path == '/workoutlog' %}active{% endif %}" href="/workoutlog">Workout Log</a></li>
+      <li><a class="nav-link {% if request.path == '/foodlist' %}active{% endif %}" href="/foodlist">Food List</a></li>
+      <li><a class="nav-link {% if request.path == '/fooddiary' %}active{% endif %}" href="/fooddiary">Food Diary</a></li>
+      <li><a class="nav-link {% if request.path == '/mystats' %}active{% endif %}" href="/mystats">My Stats</a></li>
+      <li><a class="nav-link {% if request.path == '/tips' %}active{% endif %}" href="/tips">Tips</a></li>
+      <li><a class="nav-link {% if request.path == '/contact' %}active{% endif %}" href="/contact">Contact</a></li>
+    </ul>
+    <a class="nav-link nav-link-logout" href="/logout">Log Out</a>
+    {% else %}
+    <ul class="site-nav-links site-nav-links-guest">
+      <li><a class="nav-link" href="/register">Register</a></li>
+      <li><a class="nav-link" href="/login">Log In</a></li>
+    </ul>
+    {% endif %}
+  </div>
+</nav>
 
-    <main class="container py-5 text-center">
+<main class="site-main">
       {% block main %}{% endblock %}
-    </main>
+</main>
 
-    <footer class="mb-5">
-      <p>
+<footer>
+<p>
         Disclaimer: I do not own any of the content used here. All of the
         default exercise descriptions on this site originate from the Daily
         Strength iPhone app.
-      </p>
-    </footer>
-  </body>
+</p>
+</footer>
+</body>
 </html>

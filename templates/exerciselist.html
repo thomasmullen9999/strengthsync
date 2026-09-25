@@ -1,65 +1,45 @@
-{% extends "layout.html" %} {% block title %} Exercise List {% endblock %} {%
-block main %}
+{% extends "layout.html" %}
+{% block title %}Exercise List{% endblock %}
+{% block main %}
 
 <h1>Exercise List</h1>
 
-<form action="/exerciselist" method="post">
-  <div>
-    <input
-      autocomplete="off"
-      autofocus
-      name="exercise-name"
-      placeholder="Name"
-      type="text"
-    />
-    <input
-      autocomplete="off"
-      name="exercise-muscles"
-      placeholder="Muscles Worked"
-      type="text"
-    />
-    <button type="submit" class="btn btn-primary">Add New Exercise</button>
-    <br />
-    <textarea
-      name="exercise-desc"
-      rows="4"
-      cols="65"
-      wrap="soft"
-      placeholder="Description (optional)"
-    >
-    </textarea>
+<form action="/exerciselist" method="post" class="toolbar toolbar-column">
+  <div class="toolbar-row">
+    <input autocomplete="off" autofocus name="exercise-name" placeholder="Name" type="text">
+    <input autocomplete="off" name="exercise-muscles" placeholder="Muscles Worked" type="text">
+    <button type="submit">Add New Exercise</button>
   </div>
+  <textarea name="exercise-desc" rows="3" placeholder="Description (optional)"></textarea>
 </form>
 
-<form action="/filteredexerciselist" method="get">
-  <div>
-    <button type="submit" class="btn btn-primary">Filter By</button>
-    <select name="musclefilter">
-      <option disabled selected value="">Muscle</option>
-      <option value="%">All</option>
-      <option value="biceps">Biceps</option>
-      <option value="triceps">Triceps</option>
-      <option value="chest">Chest</option>
-      <option value="shoulders">Shoulders</option>
-      <option value="lats">Lats</option>
-      <option value="abs">Abs</option>
-      <option value="quads">Quads</option>
-      <option value="hamstrings">Hamstrings</option>
-      <option value="calves">Calves</option>
-    </select>
-  </div>
+<form action="/filteredexerciselist" method="get" class="toolbar">
+  <select name="musclefilter">
+    <option disabled selected value="">Muscle</option>
+    <option value="%">All</option>
+    <option value="biceps">Biceps</option>
+    <option value="triceps">Triceps</option>
+    <option value="chest">Chest</option>
+    <option value="shoulders">Shoulders</option>
+    <option value="lats">Lats</option>
+    <option value="abs">Abs</option>
+    <option value="quads">Quads</option>
+    <option value="hamstrings">Hamstrings</option>
+    <option value="calves">Calves</option>
+  </select>
+  <button type="submit">Filter</button>
 </form>
 
+{% if exercises %}
 <table>
   <thead>
     <tr>
       <th>Name</th>
       <th>Description</th>
       <th>Muscles Worked</th>
-      <th>Delete Exercise</th>
+      <th>Remove</th>
     </tr>
   </thead>
-  <!-- Loop through the exercises to display each one in the table -->
   <tbody>
     {% for exercise in exercises %}
     <tr>
@@ -68,12 +48,15 @@ block main %}
       <td>{{ exercise.muscles_used }}</td>
       <td>
         <form action="/deleteexercise/{{ exercise.id }}" method="post">
-          <input class="btn" type="submit" name="delete" value="X" />
+          <input class="btn-delete" type="submit" name="delete" value="X">
         </form>
       </td>
     </tr>
     {% endfor %}
   </tbody>
 </table>
+{% else %}
+<p class="empty-state">No exercises yet - add your first one above.</p>
+{% endif %}
 
 {% endblock %}

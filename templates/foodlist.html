@@ -1,53 +1,49 @@
 {% extends "layout.html" %}
-
-{% block title %}
-    Food List
-{% endblock %}
-
+{% block title %}Food List{% endblock %}
 {% block main %}
 
-  <h1>Food List</h1>
+<h1>Food List</h1>
 
-<form action="/foodlist" method="post">
-  <div>
-      <input autocomplete="off" autofocus name="food-name" placeholder="Name" type="text">
-      <input autocomplete="off" name="food-protein" placeholder="Protein/100g" type="text">
-      <input autocomplete="off" name="food-carbs" placeholder="Carbs/100g" type="text">
-      <input autocomplete="off" name="food-fat" placeholder="Fat/100g" type="text">
-      <input autocomplete="off" name="food-calories" placeholder="Calories/100g" type="text">
-  </div>
-  <br>
-  <button type="submit" class="btn btn-primary">Add New Food</button>
+<form action="/foodlist" method="post" class="toolbar">
+  <input autocomplete="off" autofocus name="food-name" placeholder="Name" type="text">
+  <input autocomplete="off" name="food-protein" placeholder="Protein/100g" type="text">
+  <input autocomplete="off" name="food-carbs" placeholder="Carbs/100g" type="text">
+  <input autocomplete="off" name="food-fat" placeholder="Fat/100g" type="text">
+  <input autocomplete="off" name="food-calories" placeholder="Calories/100g" type="text">
+  <button type="submit">Add New Food</button>
 </form>
 
-
+{% if foods %}
 <table>
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Protein/100g</th>
-            <th>Carbs/100g</th>
-            <th>Fat/100g</th>
-            <th>Calories/100g</th>
-        </tr>
-    </thead>
-    <!-- Loop through the exercises to display each one in the table -->
-    <tbody>
-        {% for food in foods %}
-        <tr>
-            <td>{{ food.name }}</td>
-            <td>{{ food.protein_per_hundred_grams }}</td>
-            <td>{{ food.carbs_per_hundred_grams }}</td>
-            <td>{{ food.fat_per_hundred_grams }}</td>
-            <td>{{ food.calories_per_hundred_grams }}</td>
-            <td>
-                <form action="/deletefood/{{ food.id }}" method="post">
-                <input class="btn" type="submit" name="delete" value="X">
-                </form>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>    
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Protein/100g</th>
+      <th>Carbs/100g</th>
+      <th>Fat/100g</th>
+      <th>Calories/100g</th>
+      <th>Remove</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for food in foods %}
+    <tr>
+      <td>{{ food.name }}</td>
+      <td>{{ food.protein_per_hundred_grams }}</td>
+      <td>{{ food.carbs_per_hundred_grams }}</td>
+      <td>{{ food.fat_per_hundred_grams }}</td>
+      <td>{{ food.calories_per_hundred_grams }}</td>
+      <td>
+        <form action="/deletefood/{{ food.id }}" method="post">
+          <input class="btn-delete" type="submit" name="delete" value="X">
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
 </table>
+{% else %}
+<p class="empty-state">No foods yet - add your first one above.</p>
+{% endif %}
 
 {% endblock %}

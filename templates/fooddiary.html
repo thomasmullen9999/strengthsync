@@ -1,45 +1,83 @@
 {% extends "layout.html" %}
-
-{% block title %}
-    Food Diary
-{% endblock %}
-
+{% block title %}Food Diary{% endblock %}
 {% block main %}
 
-  <h1>Food Diary</h1>
+<h1>Food Diary</h1>
 
-  <form action="/fooddiary" method="post">
-    <button type="submit">New Entry</button>
-  </form>
+<!-- Calendar / date selector -->
+<form action="/fooddiary" method="get" class="toolbar">
+  <label for="food-date">Date:</label>
 
-    {% for foodlog in foodlogs %}
-      <h3>{{ foodlog.date }}</h3>
-      <form action="/addfood/{{ foodlog.id }}" method="post">
-        <select name="food-name">
-          <option disabled selected value="">Food</option>
-            {% for food in foods %}
-            <option value="{{ food.name }}">{{ food.name }}</option>
-            {% endfor %}
-          </select>
-        <input autocomplete="off" name="amount" placeholder="Amount(g)" type="number">
-        <input class="btn" type="submit" name="add" value="Add Food">
-      </form>
+  <input
+    type="date"
+    id="food-date"
+    name="date"
+    value="{{ selected_date }}"
+  >
 
-      {% set ns = namespace(totalcalories = 0, totalprotein = 0, totalcarbs = 0, totalfat = 0) %}
-      <table>
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Amount(g)</th>
-                <th>Protein(g)</th>
-                <th>Carbs(g)</th>
-                <th>Fat(g)</th>
-                <th>Calories</th>
-            </tr>
-        </thead>
-        <tbody>
-          {% for instance in foodinstances %}
+  <button type="submit">Show</button>
+</form>
+
+<!-- Create a food diary entry -->
+<form action="/fooddiary" method="post" class="toolbar">
+  <button type="submit">+ New Entry</button>
+</form>
+
+{% if foodlogs %}
+  {% for foodlog in foodlogs %}
+  <div class="log-card">
+    <h3>{{ foodlog.date }}</h3>
+
+    <!-- Add food to this diary entry -->
+    <form action="/addfood/{{ foodlog.id }}" method="post" class="toolbar">
+      <select name="food-name">
+        <option disabled selected value="">Food</option>
+
+        {% for food in foods %}
+        <option value="{{ food.name }}">{{ food.name }}</option>
+        {% endfor %}
+      </select>
+
+      <input
+        autocomplete="off"
+        name="amount"
+        placeholder="Amount (g)"
+        type="number"
+      >
+
+      <input type="submit" name="add" value="Add Food">
+    </form>
+
+    {% set ns = namespace(
+      totalcalories=0,
+      totalprotein=0,
+      totalcarbs=0,
+      totalfat=0,
+      has_instances=false
+    ) %}
+
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Amount (g)</th>
+          <th>Protein (g)</th>
+          <th>Carbs (g)</th>
+          <th>Fat (g)</th>
+          <th>Calories</th>
+          <th>Remove</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for instance in foodinstances %}
           {% if instance.food_log_id == foodlog.id %}
+          {% set ns.has_instances = true %}
+          {% set ns.totalcalories = ns.totalcalories + instance.calories %}
+          {% set ns.totalprotein = ns.totalprotein + instance.protein_grams %}
+          {% set ns.totalcarbs = ns.totalcarbs + instance.carbs_grams %}
+          {% set ns.totalfat = ns.totalfat + instance.fat_grams %}
+
           <tr>
             <td>{{ instance.food_name }}</td>
             <td>{{ instance.amount_grams }}</td>
@@ -48,31 +86,60 @@
             <td>{{ instance.fat_grams }}</td>
             <td>{{ instance.calories }}</td>
             <td>
-              <form action="/deletefoodinstance/{{ instance.id }}" method="post">
-              <input class="btn" type="submit" name="delete" value="X">
+              <form
+                action="/deletefoodinstance/{{ instance.id }}"
+                method="post"
+                onsubmit="return confirm('Are you sure you want to delete this food item?');"
+              >
+                <input
+                  class="btn-delete"
+                  type="submit"
+                  name="delete"
+                  value="X"
+                >
               </form>
             </td>
           </tr>
-          {% set ns.totalcalories = ns.totalcalories + instance.calories %}
-          {% set ns.totalprotein = ns.totalprotein + instance.protein_grams %}
-          {% set ns.totalcarbs = ns.totalcarbs + instance.carbs_grams %}
-          {% set ns.totalfat = ns.totalfat + instance.fat_grams %}
           {% endif %}
-        </tbody>
         {% endfor %}
-        
-      </table>
-      
-      
-      <h4>Total: {{ ns.totalprotein }}g protein, {{ ns.totalcarbs }}g carbs, {{ ns.totalfat }}g fat, {{ ns.totalcalories }}kcal</h4>
+      </tbody>
+    </table>
 
-    
+    {% if ns.has_instances %}
+    <p class="log-summary">
+      Total:
+      {{ ns.totalprotein }}g protein &middot;
+      {{ ns.totalcarbs }}g carbs &middot;
+      {{ ns.totalfat }}g fat &middot;
+      {{ ns.totalcalories }}kcal
+    </p>
 
-    <form action="/deletefoodlog/{{ foodlog.id }}" method="post">
-      <input class="btn" type="submit" name="delete" value="Delete Entry">
+    {% else %}
+    <p class="empty-state empty-state-inline">
+      No food logged for this entry yet.
+    </p>
+    {% endif %}
+
+    <!-- Delete this full food diary entry -->
+    <form
+      action="/deletefoodlog/{{ foodlog.id }}"
+      method="post"
+      onsubmit="return confirm('Are you sure you want to delete this food diary entry and all of its food items?');"
+    >
+      <input
+        class="btn-delete btn-delete-text"
+        type="submit"
+        name="delete"
+        value="Delete Entry"
+      >
     </form>
-    <br><br><br>
+  </div>
+  {% endfor %}
 
-    {% endfor %}
-    
+{% else %}
+<p class="empty-state">
+  No food diary entries for this date yet — start one above.
+</p>
+{% endif %}
+
 {% endblock %}

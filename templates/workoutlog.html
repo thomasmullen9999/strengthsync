@@ -1,66 +1,136 @@
 {% extends "layout.html" %}
-
-{% block title %}
-    Workout Log
-{% endblock %}
-
+{% block title %}Workout Log{% endblock %}
 {% block main %}
 
-  <h1>Workout Log</h1>
+<h1>Workout Log</h1>
 
-  <form action="/workoutlog" method="post">
-    <button type="submit">New Workout</button>
-  </form>
+<!-- Calendar / date selector -->
+<form action="/workoutlog" method="get" class="toolbar">
+  <label for="workout-date">Date:</label>
 
-    {% for workout in workouts %}
+  <input
+    type="date"
+    id="workout-date"
+    name="date"
+    value="{{ selected_date }}"
+  >
 
+  <button type="submit">Show</button>
+</form>
+
+<!-- Create a workout -->
+<form action="/workoutlog" method="post" class="toolbar">
+  <button type="submit">+ New Workout</button>
+</form>
+
+{% if workouts %}
+  {% for workout in workouts %}
+  <div class="workout-card">
     <h3>{{ workout.date }}</h3>
+
     <table>
       <thead>
-          <tr>
-              <th>Name</th>
-              <th>Weight</th>
-              <th>Sets</th>
-              <th>Reps</th>
-          </tr>
-      </thead>
-      <tbody>
-        {% for instance in exercise_instances %}
-        {% if instance.workout_id == workout.id %}
         <tr>
-          <td>{{ instance.exercise_name }}</td>
-          <td>{{ instance.weight_kg }}</td>
-          <td>{{ instance.sets }}</td>
-          <td>{{ instance.reps }}</td>
-          <td>
-            <form action="/deleteexerciseinstance/{{ instance.id }}" method="post">
-            <input class="btn" type="submit" name="delete" value="X">
-            </form>
-          </td>
+          <th>Name</th>
+          <th>Weight</th>
+          <th>Sets</th>
+          <th>Reps</th>
+          <th>Remove</th>
         </tr>
-        {% endif %}
+      </thead>
+
+      <tbody>
+        {% set ns = namespace(has_instances=false) %}
+
+        {% for instance in exercise_instances %}
+          {% if instance.workout_id == workout.id %}
+          {% set ns.has_instances = true %}
+
+          <tr>
+            <td>{{ instance.exercise_name }}</td>
+            <td>{{ instance.weight_kg }}</td>
+            <td>{{ instance.sets }}</td>
+            <td>{{ instance.reps }}</td>
+            <td>
+              <form
+                action="/deleteexerciseinstance/{{ instance.id }}"
+                method="post"
+                onsubmit="return confirm('Are you sure you want to delete this exercise?');"
+              >
+                <input
+                  class="btn-delete"
+                  type="submit"
+                  name="delete"
+                  value="X"
+                >
+              </form>
+            </td>
+          </tr>
+          {% endif %}
+        {% endfor %}
       </tbody>
-      {% endfor %}
     </table>
 
-    <form action="/addexercise/{{ workout.id }}" method="post">
+    {% if not ns.has_instances %}
+    <p class="empty-state empty-state-inline">
+      No exercises logged for this workout yet.
+    </p>
+    {% endif %}
+
+    <!-- Add an exercise to this workout -->
+    <form action="/addexercise/{{ workout.id }}" method="post" class="toolbar">
       <select name="exercise-name">
         <option disabled selected value="">Exercise</option>
-          {% for exercise in exercises %}
-          <option value="{{ exercise.name }}">{{ exercise.name }}</option>
-          {% endfor %}
-        </select>
-      <input autocomplete="off" name="weight" placeholder="Weight(kg)" type="number">
-      <input autocomplete="off" name="sets" placeholder="Sets" type="number">
-      <input autocomplete="off" name="reps" placeholder="Reps" type="number">
-      <input class="btn" type="submit" name="add" value="Add Exercise">
+
+        {% for exercise in exercises %}
+        <option value="{{ exercise.name }}">{{ exercise.name }}</option>
+        {% endfor %}
+      </select>
+
+      <input
+        autocomplete="off"
+        name="weight"
+        placeholder="Weight (kg)"
+        type="number"
+      >
+
+      <input
+        autocomplete="off"
+        name="sets"
+        placeholder="Sets"
+        type="number"
+      >
+
+      <input
+        autocomplete="off"
+        name="reps"
+        placeholder="Reps"
+        type="number"
+      >
+
+      <input type="submit" name="add" value="Add Exercise">
     </form>
 
-    <form action="/deleteworkout/{{ workout.id }}" method="post">
-      <input class="btn" type="submit" name="delete" value="Delete Workout">
+    <!-- Delete this full workout -->
+    <form
+      action="/deleteworkout/{{ workout.id }}"
+      method="post"
+      onsubmit="return confirm('Are you sure you want to delete this workout and all of its exercises?');"
+    >
+      <input
+        class="btn-delete btn-delete-text"
+        type="submit"
+        name="delete"
+        value="Delete Workout"
+      >
     </form>
-    <br><br><br>
+  </div>
+  {% endfor %}
 
-    {% endfor %}
-    
+{% else %}
+<p class="empty-state">
+  No workouts logged for this date yet — start one above.
+</p>
+{% endif %}
+
 {% endblock %}

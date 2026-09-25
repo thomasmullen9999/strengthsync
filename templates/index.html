@@ -1,45 +1,57 @@
-{% extends "layout.html" %} {% block title %} Home {% endblock %} {% block main
-%}
+{% extends "layout.html" %}
+{% block title %}Home{% endblock %}
+{% block main %}
 
-<h1>Home</h1>
-<p>
-  Welcome to StrengthSync, a web application which allows you to track your
-  workouts, diet, and other physical factors such as weight and steps. You can
-  read up about various gym exercises and nutritional information.
-</p>
-<h2>Exercise List</h2>
-<p>
-  View a list of strength exercises, including a detailed description of how to
-  perform each exercise as well as information on the muscle groups used. You
-  can add your own custom exercises to the list, or filter the exercises by
-  muscle groups, i.e. view all exercises which work the biceps. All of the
-  exercises on this page can be logged during your workouts in the Workout Log.
-</p>
-<h2>Workout Log</h2>
-<p>
-  Keep a track of all of your workouts. You can add one workout per day, with as
-  many exercises as you'd like; each workout includes information about weights
-  used, as well as sets and reps for strength training. If you change your mind
-  about a workout, you can remove it.
-</p>
-<h2>Food List</h2>
-<p>
-  Here you can record information about all of your favourite foods, including
-  calories, protein, carbohydrates and fats. This information is then used when
-  tracking your daily intake in the Food Diary.
-</p>
-<h2>Food Diary</h2>
-<p>
-  Keep track of how much you're eating each day, with the total amount of
-  calories, protein, carbs and fat displayed at the bottom of each day.
-</p>
-<h2>My Stats</h2>
-<p>
-  View and add to a record of your daily weight, number of steps and hours of
-  sleep.
-</p>
-<h2>Tips</h2>
-<p>A selection of various tips for getting in shape!</p>
-<h2>Contact</h2>
-<p>Details on how to get in contact with me on via various sites.</p>
+<section class="home-hero">
+  <h1>Welcome to StrengthSync</h1>
+  <p class="home-hero-subtitle">
+    Track your workouts, diet, and progress all in one place.
+  </p>
+  <a href="/workoutlog" class="btn-primary">Log a workout</a>
+</section>
+
+<section class="feature-grid">
+  <a href="/exerciselist" class="feature-card">
+    <span class="feature-icon">🏋️</span>
+    <h2>Exercise List</h2>
+    <p>Browse strength exercises with descriptions and muscle groups used, filterable by muscle. Add your own custom exercises too.</p>
+  </a>
+
+  <a href="/workoutlog" class="feature-card">
+    <span class="feature-icon">📅</span>
+    <h2>Workout Log</h2>
+    <p>Log one workout per day with as many exercises as you like, tracking weights, sets, and reps for each.</p>
+  </a>
+
+  <a href="/foodlist" class="feature-card">
+    <span class="feature-icon">🍎</span>
+    <h2>Food List</h2>
+    <p>Record your favourite foods with calories, protein, carbs, and fat, ready to use in your daily diary.</p>
+  </a>
+
+  <a href="/fooddiary" class="feature-card">
+    <span class="feature-icon">📔</span>
+    <h2>Food Diary</h2>
+    <p>Track your daily intake, with totals for calories, protein, carbs, and fat calculated automatically.</p>
+  </a>
+
+  <a href="/mystats" class="feature-card">
+    <span class="feature-icon">📊</span>
+    <h2>My Stats</h2>
+    <p>Keep a record of your daily weight, step count, and hours of sleep over time.</p>
+  </a>
+
+  <a href="/tips" class="feature-card">
+    <span class="feature-icon">💡</span>
+    <h2>Tips</h2>
+    <p>A selection of tips to help you get in shape and stay consistent.</p>
+  </a>
+
+  <a href="/contact" class="feature-card">
+    <span class="feature-icon">✉️</span>
+    <h2>Contact</h2>
+    <p>Details on how to get in touch with me across various sites.</p>
+  </a>
+</section>
+
 {% endblock %}
