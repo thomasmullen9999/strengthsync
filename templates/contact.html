@@ -1,16 +1,32 @@
 {% extends "layout.html" %}
-
-{% block title %}
-    Contact
-{% endblock %}
-
+{% block title %}Contact{% endblock %}
 {% block main %}
 
-  <div id="contact">
-    <h1>Contact</h1>
-    <h2>Email: thomasmullen9999@gmail.com</h2>
-    <h2>GitHub: thomasmullen9999</h2>
-    <h2>LinkedIn: https://www.linkedin.com/in/thomas-mullen-2591932b2/</h2>
-  </div>
+<h1>Contact</h1>
+<p class="page-intro">Feel free to get in touch via any of the links below.</p>
+
+<ul class="contact-list">
+  <li class="contact-card">
+    <span class="contact-icon">✉️</span>
+    <div>
+      <span class="contact-label">Email</span>
+      <a href="mailto:thomasmullen9999@gmail.com">thomasmullen9999@gmail.com</a>
+    </div>
+  </li>
+  <li class="contact-card">
+    <span class="contact-icon">🐙</span>
+    <div>
+      <span class="contact-label">GitHub</span>
+      <a href="https://github.com/thomasmullen9999" target="_blank" rel="noopener">thomasmullen9999</a>
+    </div>
+  </li>
+  <li class="contact-card">
+    <span class="contact-icon">💼</span>
+    <div>
+      <span class="contact-label">LinkedIn</span>
+      <a href="https://www.linkedin.com/in/thomas-mullen-2591932b2/" target="_blank" rel="noopener">Thomas Mullen</a>
+    </div>
+  </li>
+</ul>
 
 {% endblock %}

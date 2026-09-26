@@ -238,6 +238,92 @@ a:hover {
   padding: var(--space-2);
 }
 
+/* ===== Page intro text ===== */
+.page-intro {
+  color: var(--text-muted);
+  max-width: 480px;
+  margin: 0 auto var(--space-4);
+}
+
+/* ===== Tips page ===== */
+.tips-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 auto;
+  max-width: 700px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  text-align: left;
+}
+
+.tip-card {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: var(--space-3) var(--space-4);
+}
+
+.tip-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.tip-card p {
+  margin: 0;
+  color: var(--text-main);
+}
+
+/* ===== Contact page ===== */
+.contact-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 auto;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  text-align: left;
+}
+
+.contact-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: var(--space-3) var(--space-4);
+}
+
+.contact-icon {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+
+.contact-label {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--text-faint);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.contact-card a {
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.contact-card a:hover {
+  color: var(--accent);
+}
+
 /* ===== Home page ===== */
 .home-hero {
   padding: var(--space-6) var(--space-4);
