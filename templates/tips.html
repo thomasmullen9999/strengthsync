@@ -1,17 +1,27 @@
 {% extends "layout.html" %}
-
-{% block title %}
-    Register
-{% endblock %}
-
+{% block title %}Tips{% endblock %}
 {% block main %}
-    <h1>Tips</h1>
-    <div id="tips">
-        <ul>
-            <li><h3>When attempting to build muscle, try and get around 1.2-2.0 grams of protein per body weight in kg per day.</h3></li>
-            <li><h3>Don't be scared of eating a healthy amount of fats; this macronutrient is an important and required part of your diet.</h3></li>
-            <li><h3>When strength training, try to ensure you are lifting with good form before adding more weight to the bar/machine.</h3></li>
-            <li><h3>Try to eat around 250-500 calories more than your maintenance calories when bulking.</h3></li>
-        </ul>
-    </div>
+
+<h1>Tips</h1>
+<p class="page-intro">A selection of tips to help you get in shape and stay consistent.</p>
+
+<ul class="tips-list">
+  <li class="tip-card">
+    <span class="tip-icon">🥩</span>
+    <p>When attempting to build muscle, try and get around 1.2-2.0 grams of protein per kg of body weight per day.</p>
+  </li>
+  <li class="tip-card">
+    <span class="tip-icon">🥑</span>
+    <p>Don't be scared of eating a healthy amount of fats; this macronutrient is an important and required part of your diet.</p>
+  </li>
+  <li class="tip-card">
+    <span class="tip-icon">🏋️</span>
+    <p>When strength training, try to ensure you are lifting with good form before adding more weight to the bar or machine.</p>
+  </li>
+  <li class="tip-card">
+    <span class="tip-icon">📈</span>
+    <p>Try to eat around 250-500 calories more than your maintenance calories when bulking.</p>
+  </li>
+</ul>
+
 {% endblock %}

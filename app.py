@@ -1,25 +1,51 @@
-from cs50 import SQL
+import os
 from datetime import date
-
-from flask import Flask, redirect, render_template, request, session
-from flask_session import Session
 from functools import wraps
+
+from cs50 import SQL
+from flask import (
+    Flask,
+    flash,
+    redirect,
+    render_template,
+    request,
+    session,
+    url_for,
+)
+from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 
 
 app = Flask(__name__)
 
+app.config["SECRET_KEY"] = os.environ.get(
+    "SECRET_KEY",
+    "change-this-to-a-long-random-secret-in-production",
+)
 
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
-Session(app)
 
+Session(app)
 
 db = SQL("sqlite:///fitness.db")
 
 
 def error(message, code=400):
-    return render_template("error.html", top=code, bottom=message), code
+    """
+    Stores an error message in Flask's session, then returns the user
+    to the page they came from. The message is displayed in a modal
+    created by layout.html.
+    """
+    flash(message, "error")
+
+    if request.referrer:
+        return redirect(request.referrer)
+
+    if session.get("user_id"):
+        return redirect(url_for("index"))
+
+    return redirect(url_for("login"))
 
 
 def login_required(f):
@@ -27,6 +53,7 @@ def login_required(f):
     def decorated_function(*args, **kwargs):
         if session.get("user_id") is None:
             return redirect("/login")
+
         return f(*args, **kwargs)
 
     return decorated_function
@@ -60,7 +87,7 @@ def date_values(selected_date):
     return {
         "input_date": selected_date.strftime("%Y-%m-%d"),
         "db_date": selected_date.strftime("%d/%m/%Y"),
-        "display_date": selected_date.strftime("%d/%m/%Y")
+        "display_date": selected_date.strftime("%d/%m/%Y"),
     }
 
 
@@ -91,19 +118,20 @@ def exerciselist():
         muscles = request.form.get("exercise-muscles")
 
         if not name or not muscles:
-            return error("name and muscles fields must be filled in", 400)
+            return error("Name and muscles fields must be filled in.", 400)
 
         db.execute(
             """INSERT INTO exercises (name, description, muscles_used)
             VALUES (?, ?, ?)""",
             name,
             desc,
-            muscles
+            muscles,
         )
 
         return redirect("/exerciselist")
 
     exercises = db.execute("SELECT * FROM exercises;")
+
     return render_template("exerciselist.html", exercises=exercises)
 
 
@@ -118,7 +146,7 @@ def foodlist():
         calories = request.form.get("food-calories")
 
         if not name or not protein or not carbs or not fat or not calories:
-            return error("all form fields must be filled in", 400)
+            return error("All form fields must be filled in.", 400)
 
         db.execute(
             """INSERT INTO foods
@@ -129,12 +157,13 @@ def foodlist():
             protein,
             carbs,
             fat,
-            calories
+            calories,
         )
 
         return redirect("/foodlist")
 
     foods = db.execute("SELECT * FROM foods;")
+
     return render_template("foodlist.html", foods=foods)
 
 
@@ -146,7 +175,7 @@ def workoutlog():
             """INSERT INTO workouts (date, user_id)
             VALUES (?, ?)""",
             date.today().strftime("%d/%m/%Y"),
-            session["user_id"]
+            session["user_id"],
         )
 
         return redirect("/workoutlog")
@@ -161,7 +190,7 @@ def workoutlog():
         WHERE user_id = ? AND date = ?
         ORDER BY id DESC;""",
         session["user_id"],
-        dates["db_date"]
+        dates["db_date"],
     )
 
     workout_ids = [workout["id"] for workout in workouts]
@@ -172,7 +201,7 @@ def workoutlog():
         exercise_instances = db.execute(
             f"""SELECT * FROM exercise_instances
             WHERE workout_id IN ({placeholders});""",
-            *workout_ids
+            *workout_ids,
         )
     else:
         exercise_instances = []
@@ -182,7 +211,7 @@ def workoutlog():
         workouts=workouts,
         exercise_instances=exercise_instances,
         exercises=exercises,
-        selected_date=dates["input_date"]
+        selected_date=dates["input_date"],
     )
 
 
@@ -194,7 +223,7 @@ def fooddiary():
             """INSERT INTO food_logs (date, user_id)
             VALUES (?, ?)""",
             date.today().strftime("%d/%m/%Y"),
-            session["user_id"]
+            session["user_id"],
         )
 
         return redirect("/fooddiary")
@@ -209,7 +238,7 @@ def fooddiary():
         WHERE user_id = ? AND date = ?
         ORDER BY id DESC;""",
         session["user_id"],
-        dates["db_date"]
+        dates["db_date"],
     )
 
     food_log_ids = [foodlog["id"] for foodlog in foodlogs]
@@ -220,7 +249,7 @@ def fooddiary():
         foodinstances = db.execute(
             f"""SELECT * FROM food_instances
             WHERE food_log_id IN ({placeholders});""",
-            *food_log_ids
+            *food_log_ids,
         )
     else:
         foodinstances = []
@@ -230,7 +259,7 @@ def fooddiary():
         foodlogs=foodlogs,
         foods=foods,
         foodinstances=foodinstances,
-        selected_date=dates["input_date"]
+        selected_date=dates["input_date"],
     )
 
 
@@ -246,7 +275,7 @@ def mystats():
         dates = date_values(selected_date)
 
         if not weight and not steps and not sleep:
-            return error("at least one stat must be entered", 400)
+            return error("At least one stat must be entered.", 400)
 
         db.execute(
             """INSERT INTO stats
@@ -256,7 +285,7 @@ def mystats():
             steps,
             sleep,
             dates["db_date"],
-            session["user_id"]
+            session["user_id"],
         )
 
         return redirect("/mystats?date=" + dates["input_date"])
@@ -269,14 +298,14 @@ def mystats():
         WHERE user_id = ? AND date = ?
         ORDER BY id DESC;""",
         session["user_id"],
-        dates["db_date"]
+        dates["db_date"],
     )
 
     return render_template(
         "mystats.html",
         stats=stats,
         selected_date=dates["input_date"],
-        display_date=dates["display_date"]
+        display_date=dates["display_date"],
     )
 
 
@@ -290,23 +319,23 @@ def register():
         confirmation = request.form.get("confirmation")
 
         if not username or not password or not confirmation:
-            return error("all fields must be filled in", 400)
+            return error("All fields must be filled in.", 400)
 
         rows = db.execute(
             "SELECT * FROM users WHERE username = ?;",
-            username
+            username,
         )
 
         if len(rows) != 0:
-            return error("username already exists", 400)
+            return error("That username already exists. Please choose another.", 400)
 
         if password != confirmation:
-            return error("passwords must match", 403)
+            return error("Passwords must match.", 403)
 
         db.execute(
             "INSERT INTO users (username, hash) VALUES (?, ?);",
             username,
-            generate_password_hash(password)
+            generate_password_hash(password),
         )
 
         return redirect("/login")
@@ -320,21 +349,21 @@ def login():
 
     if request.method == "POST":
         if not request.form.get("username"):
-            return error("must provide username", 403)
+            return error("Please enter your username.", 403)
 
         if not request.form.get("password"):
-            return error("must provide password", 403)
+            return error("Please enter your password.", 403)
 
         rows = db.execute(
             "SELECT * FROM users WHERE username = ?",
-            request.form.get("username")
+            request.form.get("username"),
         )
 
         if len(rows) != 1 or not check_password_hash(
             rows[0]["hash"],
-            request.form.get("password")
+            request.form.get("password"),
         ):
-            return error("invalid username and/or password", 403)
+            return error("Invalid username and/or password.", 403)
 
         session["user_id"] = rows[0]["id"]
 
@@ -346,6 +375,7 @@ def login():
 @app.route("/logout")
 def logout():
     session.clear()
+
     return redirect("/")
 
 
@@ -355,13 +385,13 @@ def delete_workout(id):
     db.execute(
         """DELETE FROM exercise_instances
         WHERE workout_id = ?;""",
-        id
+        id,
     )
 
     db.execute(
         """DELETE FROM workouts
         WHERE id = ?;""",
-        id
+        id,
     )
 
     return redirect("/workoutlog")
@@ -376,7 +406,7 @@ def add_exercise(workout_id):
     name = request.form.get("exercise-name")
 
     if not weight or not name or not sets or not reps:
-        return error("all form fields must be entered", 400)
+        return error("All exercise fields must be entered.", 400)
 
     db.execute(
         """INSERT INTO exercise_instances
@@ -386,7 +416,7 @@ def add_exercise(workout_id):
         name,
         weight,
         sets,
-        reps
+        reps,
     )
 
     return redirect("/workoutlog")
@@ -398,7 +428,7 @@ def delete_exercise(id):
     db.execute(
         """DELETE FROM exercises
         WHERE id = ?;""",
-        id
+        id,
     )
 
     return redirect("/exerciselist")
@@ -410,7 +440,7 @@ def delete_food(id):
     db.execute(
         """DELETE FROM foods
         WHERE id = ?;""",
-        id
+        id,
     )
 
     return redirect("/foodlist")
@@ -424,12 +454,12 @@ def filter_exercise_list():
     filtered_exercises = db.execute(
         """SELECT * FROM exercises
         WHERE muscles_used LIKE ?;""",
-        "%" + musclefilter + "%"
+        "%" + musclefilter + "%",
     )
 
     return render_template(
         "exerciselist.html",
-        exercises=filtered_exercises
+        exercises=filtered_exercises,
     )
 
 
@@ -440,21 +470,21 @@ def add_food(foodlog_id):
     amount = request.form.get("amount")
 
     if not name or not amount:
-        return error("all form fields must be entered", 400)
+        return error("All food fields must be entered.", 400)
 
     try:
         amount = int(amount)
     except ValueError:
-        return error("amount must be a whole number", 400)
+        return error("Amount must be a whole number.", 400)
 
     foodinfo = db.execute(
         """SELECT * FROM foods
         WHERE name = ?;""",
-        name
+        name,
     )
 
     if not foodinfo:
-        return error("food could not be found", 404)
+        return error("That food could not be found.", 404)
 
     protein = int(foodinfo[0]["protein_per_hundred_grams"] * (amount / 100))
     carbs = int(foodinfo[0]["carbs_per_hundred_grams"] * (amount / 100))
@@ -472,7 +502,7 @@ def add_food(foodlog_id):
         protein,
         carbs,
         fat,
-        calories
+        calories,
     )
 
     return redirect("/fooddiary")
@@ -484,13 +514,13 @@ def delete_foodlog(id):
     db.execute(
         """DELETE FROM food_instances
         WHERE food_log_id = ?;""",
-        id
+        id,
     )
 
     db.execute(
         """DELETE FROM food_logs
         WHERE id = ?;""",
-        id
+        id,
     )
 
     return redirect("/fooddiary")
@@ -504,7 +534,7 @@ def delete_stat(id):
     db.execute(
         """DELETE FROM stats
         WHERE id = ?;""",
-        id
+        id,
     )
 
     return redirect(
@@ -518,7 +548,7 @@ def delete_exercise_instance(id):
     db.execute(
         """DELETE FROM exercise_instances
         WHERE id = ?;""",
-        id
+        id,
     )
 
     return redirect("/workoutlog")
@@ -530,7 +560,7 @@ def delete_food_instance(id):
     db.execute(
         """DELETE FROM food_instances
         WHERE id = ?;""",
-        id
+        id,
     )
 
     return redirect("/fooddiary")
